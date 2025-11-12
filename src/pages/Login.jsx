@@ -12,6 +12,8 @@ import {
   IconButton,
   InputAdornment,
   CircularProgress,
+  useTheme,
+  alpha,
 } from "@mui/material";
 import {
   Visibility,
@@ -25,6 +27,7 @@ import useAuthStore from "../store/authStore";
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
   const { login } = useAuthStore();
 
   const [formData, setFormData] = useState({
@@ -62,7 +65,6 @@ const Login = () => {
 
       if (response.success) {
         login(response.data.user, response.data.token);
-
         navigate("/dashboard");
       }
     } catch (err) {
@@ -83,169 +85,265 @@ const Login = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #1976d2 0%, #00bcd4 100%)",
+        background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
         backgroundImage:
-          "url(https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=1200&q=80)",
+          "linear-gradient(135deg, rgba(25, 118, 210, 0.9) 0%, rgba(0, 188, 212, 0.9) 100%), url(https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=1200&q=80)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundBlendMode: "overlay",
+        py: 2,
+        px: 2,
       }}
     >
-      <Container maxWidth="sm">
-        <Card
-          sx={{
-            borderRadius: 4,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-            overflow: "hidden",
-          }}
-        >
-          {/* Header */}
-          <Box
+      <Container
+        maxWidth="sm"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <Box sx={{ width: "100%", maxWidth: 450 }}>
+          <Card
             sx={{
-              backgroundColor: "#1976d2",
-              color: "white",
-              py: 4,
-              textAlign: "center",
+              borderRadius: 4,
+              boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+              overflow: "hidden",
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+              mb: 3,
             }}
           >
-            <Pool sx={{ fontSize: 60, mb: 1 }} />
-            <Typography variant="h5" fontWeight={600}>
-              Sistema de Piscinas
-            </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
-              Inicia sesión para continuar
-            </Typography>
-          </Box>
-
-          <CardContent sx={{ p: 4 }}>
-            {/* Mensaje de éxito */}
-            {successMessage && (
-              <Alert severity="success" sx={{ mb: 3 }}>
-                {successMessage}
-              </Alert>
-            )}
-
-            {/* Mensaje de error */}
-            {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {error}
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Correo Electrónico"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                margin="normal"
-                required
-                autoComplete="email"
-                autoFocus
-                InputProps={{
-                  sx: { borderRadius: 2 },
-                }}
-              />
-
-              <TextField
-                fullWidth
-                label="Contraseña"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleChange}
-                margin="normal"
-                required
-                autoComplete="current-password"
-                InputProps={{
-                  sx: { borderRadius: 2 },
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                        aria-label="toggle password visibility"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-
-              <Button
-                fullWidth
-                type="submit"
-                variant="contained"
-                size="large"
-                disabled={loading}
-                startIcon={
-                  loading ? <CircularProgress size={20} /> : <LoginIcon />
-                }
+            {/* Header con gradiente */}
+            <Box
+              sx={{
+                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                color: "white",
+                py: 4,
+                textAlign: "center",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <Box
                 sx={{
-                  mt: 3,
-                  mb: 2,
-                  py: 1.5,
-                  textTransform: "none",
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  backgroundColor: "#1976d2",
-                  "&:hover": {
-                    backgroundColor: "#1565c0",
-                  },
+                  position: "absolute",
+                  top: -50,
+                  right: -50,
+                  width: 120,
+                  height: 120,
+                  borderRadius: "50%",
+                  background: alpha("#fff", 0.1),
                 }}
-              >
-                {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
-              </Button>
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: -30,
+                  left: -30,
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  background: alpha("#fff", 0.1),
+                }}
+              />
 
-              <Box sx={{ textAlign: "center", mt: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  ¿No tienes una cuenta?{" "}
-                  <Link
-                    to="/register"
-                    style={{
-                      color: "#1976d2",
-                      textDecoration: "none",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Regístrate aquí
-                  </Link>
+              <Box position="relative" zIndex={1}>
+                <Pool
+                  sx={{
+                    fontSize: 48,
+                    mb: 2,
+                    filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))",
+                  }}
+                />
+                <Typography variant="h4" fontWeight={700} gutterBottom>
+                  Iniciar Sesión
+                </Typography>
+                <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                  Bienvenido de vuelta al sistema
                 </Typography>
               </Box>
+            </Box>
 
-              <Box sx={{ textAlign: "center", mt: 2 }}>
-                <Link
-                  to="/"
-                  style={{
-                    color: "#666",
-                    textDecoration: "none",
-                    fontSize: "0.875rem",
+            <CardContent sx={{ p: 4 }}>
+              {/* Mensaje de éxito */}
+              {successMessage && (
+                <Alert
+                  severity="success"
+                  sx={{
+                    mb: 3,
+                    borderRadius: 2,
+                    alignItems: "center",
                   }}
                 >
-                  ← Volver al inicio
-                </Link>
-              </Box>
-            </form>
-          </CardContent>
-        </Card>
+                  {successMessage}
+                </Alert>
+              )}
 
-        {/* Demo credentials (opcional - solo para testing) */}
-        <Box
-          sx={{
-            mt: 3,
-            p: 2,
-            backgroundColor: "rgba(255,255,255,0.9)",
-            borderRadius: 2,
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="caption" color="text.secondary">
-            <strong>Demo:</strong> admin@test.com / Admin123!
-          </Typography>
+              {/* Mensaje de error */}
+              {error && (
+                <Alert
+                  severity="error"
+                  sx={{
+                    mb: 3,
+                    borderRadius: 2,
+                    alignItems: "center",
+                  }}
+                >
+                  {error}
+                </Alert>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                <Box sx={{ mb: 3 }}>
+                  <TextField
+                    fullWidth
+                    label="Correo Electrónico"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    autoComplete="email"
+                    autoFocus
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                      },
+                    }}
+                  />
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <TextField
+                    fullWidth
+                    label="Contraseña"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    autoComplete="current-password"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                      },
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            aria-label="toggle password visibility"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  startIcon={
+                    loading ? <CircularProgress size={20} /> : <LoginIcon />
+                  }
+                  sx={{
+                    mt: 1,
+                    mb: 3,
+                    py: 1.5,
+                    textTransform: "none",
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
+                    "&:hover": {
+                      boxShadow: "0 6px 16px rgba(25, 118, 210, 0.4)",
+                      transform: "translateY(-1px)",
+                    },
+                    "&:disabled": {
+                      transform: "none",
+                      boxShadow: "none",
+                    },
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                </Button>
+
+                <Box sx={{ textAlign: "center", mb: 2 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    ¿No tienes una cuenta?{" "}
+                    <Link
+                      to="/register"
+                      style={{
+                        color: theme.palette.primary.main,
+                        textDecoration: "none",
+                        fontWeight: 600,
+                        transition: "color 0.2s ease",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.target.style.color = theme.palette.primary.dark)
+                      }
+                      onMouseLeave={(e) =>
+                        (e.target.style.color = theme.palette.primary.main)
+                      }
+                    >
+                      Regístrate aquí
+                    </Link>
+                  </Typography>
+                </Box>
+
+                <Box sx={{ textAlign: "center" }}>
+                  <Link
+                    to="/"
+                    style={{
+                      color: theme.palette.text.secondary,
+                      textDecoration: "none",
+                      fontSize: "0.875rem",
+                      transition: "color 0.2s ease",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.target.style.color = theme.palette.text.primary)
+                    }
+                    onMouseLeave={(e) =>
+                      (e.target.style.color = theme.palette.text.secondary)
+                    }
+                  >
+                    ← Volver al inicio
+                  </Link>
+                </Box>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Demo credentials */}
+          <Card
+            sx={{
+              borderRadius: 3,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+              backgroundColor: alpha(theme.palette.primary.main, 0.05),
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+            }}
+          >
+            <CardContent sx={{ p: 2, textAlign: "center" }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontWeight: 500 }}
+              >
+                <strong>Credenciales de Demo:</strong> admin@test.com /
+                Admin123!
+              </Typography>
+            </CardContent>
+          </Card>
         </Box>
       </Container>
     </Box>

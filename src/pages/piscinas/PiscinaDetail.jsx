@@ -34,7 +34,8 @@ import {
 } from "@mui/icons-material";
 import { piscinaApi } from "../../api/piscinaApi";
 import useAuthStore from "../../store/authStore";
-
+import PiscinaFormModal from "../piscinas/PiscinaCreate";
+import DeleteConfirmModal from "../piscinas/PiscinaModal";
 function TabPanel({ children, value, index, ...other }) {
   return (
     <div
@@ -52,15 +53,19 @@ const PiscinaDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAdmin } = useAuthStore();
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingPiscina, setEditingPiscina] = useState(null);
   const [piscina, setPiscina] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tabValue, setTabValue] = useState(0);
-
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   useEffect(() => {
     fetchPiscinaDetail();
-  });
+  }, [id]);
+  const handleSuccess = () => {
+    fetchPiscinaDetail();
+  };
 
   const fetchPiscinaDetail = async () => {
     try {
@@ -76,20 +81,28 @@ const PiscinaDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm("¿Estás seguro de eliminar esta piscina?")) {
-      try {
-        await piscinaApi.delete(id);
-        navigate("/piscinas");
-      } catch (err) {
-        alert("Error al eliminar la piscina");
-      }
-    }
+    await piscinaApi.delete(id);
+    fetchPiscinaDetail();
+    setDeleteModalOpen(false);
   };
-
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedPiscina, setSelectedPiscina] = useState(null);
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setEditingPiscina(null);
+  };
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
-
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedPiscina(null);
+  };
+  const handleOpenEditModal = (piscina) => {
+    setEditingPiscina(piscina);
+    setModalOpen(true);
+    handleMenuClose();
+  };
   if (loading) {
     return (
       <Box
@@ -141,7 +154,7 @@ const PiscinaDetail = () => {
             <Button
               variant="outlined"
               startIcon={<Edit />}
-              onClick={() => navigate(`/piscinas/edit/${id}`)}
+              onClick={() => handleOpenEditModal(piscina)}
               sx={{ textTransform: "none" }}
             >
               Editar
@@ -150,7 +163,7 @@ const PiscinaDetail = () => {
               variant="outlined"
               color="error"
               startIcon={<Delete />}
-              onClick={handleDelete}
+              onClick={() => setDeleteModalOpen(true)}
               sx={{ textTransform: "none" }}
             >
               Eliminar
@@ -455,6 +468,20 @@ const PiscinaDetail = () => {
           </Alert>
         )}
       </TabPanel>
+      <PiscinaFormModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        piscina={editingPiscina}
+        onSuccess={handleSuccess}
+      />
+      <DeleteConfirmModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Eliminar Piscina"
+        message="¿Estás seguro de que deseas eliminar esta piscina? Se perderán todos los datos asociados."
+        itemName={piscina.nombre}
+      />
     </Container>
   );
 };

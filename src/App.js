@@ -12,7 +12,7 @@ import DashboardLayout from "./components/layout/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import PiscinasList from "./pages/piscinas/PiscinasList";
 import PiscinaCreate from "./pages/piscinas/PiscinaCreate";
-import PiscinaEdit from "./pages/piscinas/PiscinaEdit";
+import PiscinaEdit from "./pages/piscinas/PiscinaEditar";
 import PiscinaDetail from "./pages/piscinas/PiscinaDetail";
 import UsersList from "./pages/users/UsersList";
 

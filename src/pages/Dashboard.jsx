@@ -11,13 +11,7 @@ import {
   useTheme,
   alpha,
 } from "@mui/material";
-import {
-  Add,
-  CalendarMonth,
-  Description,
-  Pool,
-  TrendingUp,
-} from "@mui/icons-material";
+import { Add, Description, Pool, TrendingUp, Group } from "@mui/icons-material";
 import useAuthStore from "../store/authStore";
 
 const Dashboard = () => {
@@ -53,32 +47,18 @@ const Dashboard = () => {
       adminOnly: false,
     },
     {
-      title: "Calendario",
-      description: "Consulta el mantenimiento programado.",
-      action: () => alert("Función próximamente"),
-      buttonText: "Ver Calendario",
+      title: "Gestionar Usuarios",
+      description: "Administra los usuarios del sistema.",
+      action: () => navigate("/users"),
+      buttonText: "Ver Lista",
       color: "#e0f7fa",
-      icon: <CalendarMonth sx={{ fontSize: 32, color: "#00bcd4" }} />,
+      icon: <Group sx={{ fontSize: 32, color: "#00bcd4" }} />,
       adminOnly: false,
       badge: "Próximamente",
     },
-    {
-      title: "Generar Reporte",
-      description: "Crea informes de uso e incidentes.",
-      action: () => alert("Función próximamente"),
-      buttonText: "Generar",
-      color: "#fff3e0",
-      icon: <Description sx={{ fontSize: 32, color: "#ff9800" }} />,
-      adminOnly: false,
-    },
   ];
 
-  const stats = [
-    { label: "Piscinas Activas", value: "24", trend: "+2" },
-    { label: "Mantenimientos", value: "8", trend: "-1" },
-    { label: "Usuarios", value: "156", trend: "+12" },
-    { label: "Eficiencia", value: "94%", trend: "+3%" },
-  ];
+  const stats = [];
 
   const filteredActions = quickActions.filter(
     (action) => !action.adminOnly || (action.adminOnly && isAdmin()),

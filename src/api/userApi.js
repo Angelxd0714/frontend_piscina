@@ -13,16 +13,15 @@ export const userApi = {
     return response.data;
   },
 
-  // Actualizar usuario (activar/inactivar)
-  update: async (id, userData) => {
-    const response = await axiosInstance.put(`/api/users/${id}`, userData);
+  // Crear nuevo usuario
+  create: async (userData) => {
+    const response = await axiosInstance.post("/api/users", userData);
     return response.data;
   },
-  patch: async (id, userData) => {
-    const response = await axiosInstance.patch(
-      `/api/users/${id}/toggle-state`,
-      userData,
-    );
+
+  // Actualizar usuario
+  update: async (id, userData) => {
+    const response = await axiosInstance.put(`/api/users/${id}`, userData);
     return response.data;
   },
 
@@ -31,4 +30,11 @@ export const userApi = {
     const response = await axiosInstance.delete(`/api/users/${id}`);
     return response.data;
   },
+
+  toggleState: async (id) => {
+    const response = await axiosInstance.patch(`/api/users/${id}/toggle-state`);
+    return response.data;
+  },
 };
+
+export default userApi;
