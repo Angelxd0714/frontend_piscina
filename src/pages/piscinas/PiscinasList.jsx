@@ -34,9 +34,11 @@ import {
 import { piscinaApi } from "../../api/piscinaApi";
 import useAuthStore from "../../store/authStore";
 import PiscinaFormModal from "../piscinas/PiscinaCreate";
+import { useNavigate } from "react-router-dom";
 
 const PiscinasList = () => {
   const { isAdmin } = useAuthStore();
+  const navigate = useNavigate();
 
   const [piscinas, setPiscinas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -343,7 +345,7 @@ const PiscinasList = () => {
                   <Button
                     size="small"
                     startIcon={<Visibility />}
-                    onClick={() => alert("Ver detalles próximamente")}
+                    onClick={() => navigate(`/piscinas/${piscina._id}`)}
                     sx={{ textTransform: "none" }}
                   >
                     Ver Detalles
