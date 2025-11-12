@@ -55,7 +55,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+    console.log(formData);
     if (
       !formData.nombre ||
       !formData.identificacion ||
@@ -79,7 +79,7 @@ const Register = () => {
       if (response.success) {
         login(response.data.user, response.data.token);
 
-        navigate("/piscinas");
+        navigate("/dashboard");
       }
     } catch (err) {
       setError(

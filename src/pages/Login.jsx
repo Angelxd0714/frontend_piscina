@@ -63,7 +63,7 @@ const Login = () => {
       if (response.success) {
         login(response.data.user, response.data.token);
 
-        navigate("/piscinas");
+        navigate("/dashboard");
       }
     } catch (err) {
       setError(

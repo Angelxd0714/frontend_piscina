@@ -1,22 +1,21 @@
 import axiosInstance from "./axiosConfig";
 
 export const authApi = {
-  // Login: POST /api/auth/login
-  login: async (email, password) => {
+  login: async (correo, password) => {
     const response = await axiosInstance.post("/api/auth/login", {
-      email,
+      correo,
       password,
     });
     return response.data;
   },
 
-  // Register: POST /api/auth/register
   register: async (userData) => {
+    console.log(userData);
     const response = await axiosInstance.post("/api/auth/register", {
       nombre: userData.nombre,
-      apellido: userData.apellido || "", // Opcional
-      cedula: userData.identificacion,
-      email: userData.correo,
+      apellido: userData.apellido || "",
+      identificacion: userData.identificacion,
+      correo: userData.correo,
       password: userData.password,
       rol: userData.rol || "USER",
     });
