@@ -28,6 +28,8 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [profundidadError, setProfundidadError] = useState("");
+  const [bombasError, setBombasError] = useState("");
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -59,6 +61,51 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
     ],
   });
 
+  // Calcular total de bombas
+  const calcularTotalBombas = (bombas) => {
+    let total = 0;
+    total = bombas.length;
+    console.log("Total Bombas:", total);
+    return total;
+  };
+
+  const validarCantidadBombas = (bombas, totalProfundidades) => {
+    const totalBombas = calcularTotalBombas(bombas);
+
+    if (totalBombas !== totalProfundidades) {
+      setBombasError(
+        `La cantidad total de bombas (${totalBombas}) debe ser igual al total de profundidades (${totalProfundidades})`,
+      );
+      return false;
+    }
+
+    setBombasError("");
+    return true;
+  };
+
+  const validarProfundidades = (profundidades) => {
+    const valores = profundidades
+      .map((p) => parseFloat(p))
+      .filter((p) => !isNaN(p) && p > 0);
+
+    if (valores.length < 2) {
+      setProfundidadError("");
+      return true;
+    }
+
+    for (let i = 0; i < valores.length - 1; i++) {
+      if (valores[i] >= valores[i + 1]) {
+        setProfundidadError(
+          `Las profundidades deben estar en orden ascendente. ${valores[i]}m debe ser menor que ${valores[i + 1]}m`,
+        );
+        return false;
+      }
+    }
+
+    setProfundidadError("");
+    return true;
+  };
+
   useEffect(() => {
     if (piscina) {
       setFormData({
@@ -71,7 +118,7 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
         temperaturaExterna: piscina.temperaturaExterna || "",
         categoria: piscina.categoria || "Niños",
         totalProfundidades: piscina.profundidades?.length || 1,
-        profundidades: piscina.profundidades || [""],
+        profundidades: piscina.profundidades?.map((p) => String(p)) || [""],
         forma: piscina.forma || "Rectangular",
         uso: piscina.uso || "Privada",
         filtros: piscina.filtros || "",
@@ -97,7 +144,6 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // Actualizar profundidades cuando cambia totalProfundidades
     if (name === "totalProfundidades") {
       const total = parseInt(value) || 1;
       const newProfundidades = Array(total).fill("");
@@ -106,6 +152,9 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
         totalProfundidades: total,
         profundidades: newProfundidades,
       });
+      setProfundidadError("");
+
+      validarCantidadBombas(formData.bombas, total);
     }
   };
 
@@ -113,12 +162,18 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
     const newProfundidades = [...formData.profundidades];
     newProfundidades[index] = value;
     setFormData({ ...formData, profundidades: newProfundidades });
+
+    validarProfundidades(newProfundidades);
   };
 
   const handleBombaChange = (index, field, value) => {
     const newBombas = [...formData.bombas];
     newBombas[index][field] = value;
     setFormData({ ...formData, bombas: newBombas });
+
+    if (field === "seRepite" || field === "totalBombas") {
+      validarCantidadBombas(newBombas, formData.totalProfundidades);
+    }
   };
 
   const handleFileChange = (e, field, bombaIndex = null) => {
@@ -133,40 +188,58 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
   };
 
   const addBomba = () => {
+    const newBombas = [
+      ...formData.bombas,
+      {
+        marca: "",
+        referencia: "",
+        potencia: "",
+        material: "Centrifuga",
+        seRepite: "no",
+        totalBombas: "",
+        fotoBomba: null,
+        hojaSeguridad: null,
+        fichaTecnica: null,
+      },
+    ];
     setFormData({
       ...formData,
-      bombas: [
-        ...formData.bombas,
-        {
-          marca: "",
-          referencia: "",
-          potencia: "",
-          material: "Centrifuga",
-          seRepite: "no",
-          totalBombas: "",
-          fotoBomba: null,
-          hojaSeguridad: null,
-          fichaTecnica: null,
-        },
-      ],
+      bombas: newBombas,
     });
+
+    validarCantidadBombas(newBombas, formData.totalProfundidades);
   };
 
   const removeBomba = (index) => {
     const newBombas = formData.bombas.filter((_, i) => i !== index);
     setFormData({ ...formData, bombas: newBombas });
+
+    validarCantidadBombas(newBombas, formData.totalProfundidades);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!validarProfundidades(formData.profundidades)) {
+      setError(
+        "Por favor, corrige el orden de las profundidades antes de continuar.",
+      );
+      return;
+    }
+
+    if (!validarCantidadBombas(formData.bombas, formData.totalProfundidades)) {
+      setError(
+        "La cantidad total de bombas debe ser igual al total de profundidades.",
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Crear FormData para enviar archivos
       const data = new FormData();
 
-      // Campos básicos
       data.append("nombre", formData.nombre);
       data.append("direccion", formData.direccion);
       data.append("altura", formData.altura);
@@ -183,15 +256,17 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
         data.append("temperaturaExterna", formData.temperaturaExterna);
       }
 
-      // Profundidades como JSON string
-      data.append("profundidades", JSON.stringify(formData.profundidades));
+      const profundidadesOrdenadas = formData.profundidades
+        .map((p) => parseFloat(p))
+        .filter((p) => !isNaN(p))
+        .sort((a, b) => a - b);
 
-      // Foto principal
+      data.append("profundidades", JSON.stringify(profundidadesOrdenadas));
+
       if (formData.foto) {
         data.append("foto", formData.foto);
       }
 
-      // Bombas (sin archivos)
       const bombasSinArchivos = formData.bombas.map((bomba) => ({
         marca: bomba.marca,
         referencia: bomba.referencia,
@@ -202,7 +277,6 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
       }));
       data.append("bombas", JSON.stringify(bombasSinArchivos));
 
-      // Archivos de bombas
       formData.bombas.forEach((bomba, index) => {
         if (bomba.fotoBomba) {
           data.append(`fotoBomba_${index}`, bomba.fotoBomba);
@@ -410,6 +484,13 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
           <Typography variant="subtitle1" fontWeight={600} gutterBottom>
             Profundidades
           </Typography>
+
+          {profundidadError && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {profundidadError}
+            </Alert>
+          )}
+
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} sm={4}>
               <TextField
@@ -435,6 +516,8 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
                   }
                   required
                   inputProps={{ step: "0.1", min: "0.1" }}
+                  error={profundidadError !== ""}
+                  disabled={profundidadError !== "" || bombasError !== ""}
                 />
               </Grid>
             ))}
@@ -492,7 +575,8 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
             }}
           >
             <Typography variant="subtitle1" fontWeight={600}>
-              Bombas ({formData.bombas.length})
+              Bombas ({calcularTotalBombas(formData.bombas)} de{" "}
+              {formData.totalProfundidades})
             </Typography>
             <Button
               variant="outlined"
@@ -504,6 +588,13 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
               Agregar Bomba
             </Button>
           </Box>
+
+          {/* ✅ Alerta de error de bombas */}
+          {bombasError && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {bombasError}
+            </Alert>
+          )}
 
           {formData.bombas.map((bomba, index) => (
             <Card key={index} sx={{ mb: 2, p: 2, bgcolor: "grey.50" }}>
@@ -680,7 +771,7 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
           <Button
             type="submit"
             variant="contained"
-            disabled={loading}
+            disabled={loading || profundidadError !== "" || bombasError !== ""} // ✅ Deshabilitar si hay errores
             startIcon={loading && <CircularProgress size={20} />}
             sx={{ textTransform: "none", px: 3 }}
           >
