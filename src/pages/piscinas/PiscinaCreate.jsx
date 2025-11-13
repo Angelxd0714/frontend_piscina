@@ -61,7 +61,6 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
     ],
   });
 
-  // Calcular total de bombas
   const calcularTotalBombas = (bombas) => {
     let total = 0;
     total = bombas.length;
