@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import { Close, Person, Visibility, VisibilityOff } from "@mui/icons-material";
 import { userApi } from "../api/userApi";
+import { authApi } from "../api/authApi";
 
 const UserFormModal = ({ open, onClose, user = null, onSuccess }) => {
   const isEdit = Boolean(user);
@@ -97,7 +98,7 @@ const UserFormModal = ({ open, onClose, user = null, onSuccess }) => {
       if (isEdit) {
         await userApi.update(user._id, dataToSend);
       } else {
-        await userApi.create(dataToSend);
+        await authApi.register(dataToSend);
       }
 
       onSuccess();

@@ -209,8 +209,8 @@ const UsersList = () => {
               label="Filtrar por Estado"
             >
               <MenuItem value="">Todos</MenuItem>
-              <MenuItem value="activo">Activo</MenuItem>
-              <MenuItem value="inactivo">Inactivo</MenuItem>
+              <MenuItem value="ACTIVO">Activo</MenuItem>
+              <MenuItem value="INACTIVO">Inactivo</MenuItem>
             </Select>
           </FormControl>
         </Box>
