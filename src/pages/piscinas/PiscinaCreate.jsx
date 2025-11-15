@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import { Close, Add, Delete, CloudUpload, Pool } from "@mui/icons-material";
 import { piscinaApi } from "../../api/piscinaApi";
+import LocationSelector from "../../components/LocationSelector";
 
 const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
   const isEdit = Boolean(piscina);
@@ -36,8 +37,9 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
     direccion: "",
     altura: "",
     ancho: "",
-    ciudad: "",
-    municipio: "",
+    departamento: "", // ✅ Solo para UI (selector)
+    ciudad: "", // ✅ Se envía al backend
+    municipio: "", // ✅ Se envía al backend
     temperaturaExterna: "",
     categoria: "Niños",
     totalProfundidades: 1,
@@ -60,6 +62,16 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
       },
     ],
   });
+
+  // ✅ Handlers para LocationSelector
+  const handleDeptChange = (dept) => {
+    setFormData({ ...formData, departamento: dept, ciudad: "", municipio: "" });
+  };
+
+  const handleCityChange = (city) => {
+    // city aquí es el municipio seleccionado
+    setFormData({ ...formData, ciudad: city, municipio: city });
+  };
 
   const calcularTotalBombas = (bombas) => {
     let total = 0;
@@ -112,6 +124,7 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
         direccion: piscina.direccion || "",
         altura: piscina.altura || "",
         ancho: piscina.ancho || "",
+        departamento: "",
         ciudad: piscina.ciudad || "",
         municipio: piscina.municipio || "",
         temperaturaExterna: piscina.temperaturaExterna || "",
@@ -234,6 +247,16 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
       return;
     }
 
+    for (let i = 0; i < formData.bombas.length; i++) {
+      const bomba = formData.bombas[i];
+      if (!bomba.fotoBomba || !bomba.hojaSeguridad || !bomba.fichaTecnica) {
+        setError(
+          `Bomba ${i + 1}: Debes cargar foto, hoja de seguridad y ficha técnica.`,
+        );
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -243,8 +266,11 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
       data.append("direccion", formData.direccion);
       data.append("altura", formData.altura);
       data.append("ancho", formData.ancho);
+
+      // ✅ Envía solo ciudad y municipio
       data.append("ciudad", formData.ciudad);
       data.append("municipio", formData.municipio);
+
       data.append("categoria", formData.categoria);
       data.append("totalProfundidades", formData.totalProfundidades);
       data.append("forma", formData.forma);
@@ -370,26 +396,17 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
                 required
               />
             </Grid>
+
+            {/* ✅ LocationSelector - devuelve ciudad y municipio */}
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Ciudad"
-                name="ciudad"
-                value={formData.ciudad}
-                onChange={handleChange}
-                required
+              <LocationSelector
+                selectedDept={formData.departamento}
+                onDeptChange={handleDeptChange}
+                selectedCity={formData.ciudad}
+                onCityChange={handleCityChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Municipio"
-                name="municipio"
-                value={formData.municipio}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -588,7 +605,6 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
             </Button>
           </Box>
 
-          {/* ✅ Alerta de error de bombas */}
           {bombasError && (
             <Alert severity="warning" sx={{ mb: 2 }}>
               {bombasError}
@@ -770,7 +786,7 @@ const PiscinaFormModal = ({ open, onClose, piscina = null, onSuccess }) => {
           <Button
             type="submit"
             variant="contained"
-            disabled={loading || profundidadError !== "" || bombasError !== ""} // ✅ Deshabilitar si hay errores
+            disabled={loading || profundidadError !== "" || bombasError !== ""}
             startIcon={loading && <CircularProgress size={20} />}
             sx={{ textTransform: "none", px: 3 }}
           >

@@ -4,9 +4,10 @@ import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./theme/theme";
 
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import DashboardLayout from "./components/layout/Sidebar";
 
 import Dashboard from "./pages/Dashboard";
@@ -24,12 +25,14 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          {/* Public routes */}
+          {/* ✅ Public routes - AFUERA de ProtectedRoute */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-          {/* Protected routes with layout */}
+          {/* ✅ Protected routes with layout */}
           <Route
             path="/*"
             element={

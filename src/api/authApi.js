@@ -27,4 +27,13 @@ export const authApi = {
     const response = await axiosInstance.post("/api/auth/logout");
     return response.data;
   },
+  forgotPassword: async (correo) => {
+    const response = await axiosInstance.post(
+      "/api/auth/request-password-reset",
+      {
+        correo,
+      },
+    );
+    return response.data;
+  },
 };

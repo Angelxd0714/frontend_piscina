@@ -25,8 +25,8 @@ import {
   Pool,
   PersonAdd,
 } from "@mui/icons-material";
-import { authApi } from "../api/authApi";
-import useAuthStore from "../store/authStore";
+import { authApi } from "../../api/authApi";
+import useAuthStore from "../../store/authStore";
 
 const Register = () => {
   const navigate = useNavigate();

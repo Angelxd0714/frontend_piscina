@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { authApi } from "../../api/authApi";
 import {
   Box,
   Container,
@@ -21,8 +22,7 @@ import {
   Pool,
   Login as LoginIcon,
 } from "@mui/icons-material";
-import { authApi } from "../api/authApi";
-import useAuthStore from "../store/authStore";
+import useAuthStore from "../../store/authStore";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -214,36 +214,71 @@ const Login = () => {
                   />
                 </Box>
 
-                <Box sx={{ mb: 3 }}>
-                  <TextField
-                    fullWidth
-                    label="Contraseña"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    autoComplete="current-password"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: 2,
-                      },
+                <Box
+                  sx={{
+                    mb: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box sx={{ flex: 1 }}>
+                    <TextField
+                      fullWidth
+                      label="Contraseña"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      autoComplete="current-password"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                        },
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              edge="end"
+                              aria-label="toggle password visibility"
+                              sx={{ color: "text.secondary" }}
+                            >
+                              {showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
+                </Box>
+
+                {/* ✅ Link Olvidé Contraseña */}
+                <Box sx={{ textAlign: "right", mb: 3 }}>
+                  <Link
+                    to="/forgot-password"
+                    style={{
+                      color: theme.palette.primary.main,
+                      textDecoration: "none",
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                      transition: "color 0.2s ease",
                     }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                            edge="end"
-                            aria-label="toggle password visibility"
-                            sx={{ color: "text.secondary" }}
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                    onMouseEnter={(e) =>
+                      (e.target.style.color = theme.palette.primary.dark)
+                    }
+                    onMouseLeave={(e) =>
+                      (e.target.style.color = theme.palette.primary.main)
+                    }
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </Link>
                 </Box>
 
                 <Button
